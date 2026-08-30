@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dusty & Bully — Outlaw County</title>
+<style>
+:root{
+  --bg:#120d0a;--panel:#211711;--panel2:#2d1d14;--panel3:#3b2517;
+  --gold:#f4b83f;--gold2:#ffd96a;--text:#fff1d5;--muted:#bca486;
+  --green:#58c66d;--red:#d75a46;--line:#674426;--blue:#5b9dcc;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#090706;color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{min-height:100vh}
+button{font:inherit;cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.45}
+#app{max-width:760px;margin:auto;min-height:100vh;background:var(--bg);padding-bottom:88px}
+.topbar{
+  position:sticky;top:0;z-index:30;padding:10px;
+  background:#17100c;border-bottom:2px solid #4e321f;
+  display:grid;grid-template-columns:58px 1fr 58px;gap:8px
+}
+.avatar,.moneybox,.menu{
+  border:2px solid #714a29;background:linear-gradient(#49301d,#21150e);
+  border-radius:13px;box-shadow:0 3px 0 #0a0705
+}
+.avatar{height:58px;display:grid;place-items:center;position:relative;font-size:31px}
+.avatar small{position:absolute;bottom:2px;font-size:8px;font-weight:1000;color:var(--gold2)}
+.moneybox{padding:7px 10px;min-width:0}
+.money{font-size:21px;font-weight:1000;color:var(--gold2);white-space:nowrap}
+.income{font-size:10px;font-weight:900;color:var(--green)}
+.menu{border:2px solid #714a29;color:var(--gold2);font-size:27px}
+.screen{padding:12px}
+.town{
+  position:relative;min-height:455px;overflow:hidden;border:2px solid #754a29;border-radius:18px;
+  background:
+    radial-gradient(circle at 82% 17%,#ffe17c 0 28px,transparent 29px),
+    linear-gradient(#72bce7 0 43%,#d99243 43% 100%);
+}
+.town:before,.town:after{
+  content:"";position:absolute;bottom:112px;width:0;height:0;border-left:110px solid transparent;border-right:110px solid transparent;border-bottom:125px solid #a55b3b;opacity:.8
+}
+.town:before{left:-40px}.town:after{right:-30px;transform:scale(.8)}
+.townground{position:absolute;left:0;right:0;bottom:0;height:180px;background:
+ radial-gradient(circle at 15% 38%,#6d3c22 0 3px,transparent 4px),
+ radial-gradient(circle at 50% 70%,#6d3c22 0 4px,transparent 5px),
+ radial-gradient(circle at 80% 28%,#6d3c22 0 3px,transparent 4px),#b96e35}
+.sign{
+ position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:5;
+ background:#75441f;border:5px solid #412511;border-radius:7px;padding:8px 22px;text-align:center;
+ box-shadow:0 4px 0 #3b2112;white-space:nowrap
+}
+.sign b{font-family:Georgia,serif;font-size:18px}.sign small{display:block;font-size:8px;font-weight:1000}
+.characters{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);z-index:7;display:flex;align-items:end;gap:2px}
+.person,.dog{width:126px;height:188px;position:relative}
+.person .torso{position:absolute;left:22px;bottom:0;width:82px;height:113px;background:#456d8d;border:4px solid #2b1a11;border-radius:42px 42px 16px 16px}
+.person .head{position:absolute;left:32px;top:42px;width:64px;height:68px;border:4px solid #2b1a11;background:#d99155;border-radius:50%;z-index:3}
+.person .hat{position:absolute;left:17px;top:20px;width:94px;height:30px;background:#60371e;border:4px solid #2b1a11;border-radius:50%;z-index:5}
+.person .hat:before{content:"";position:absolute;left:29px;top:-26px;width:36px;height:34px;background:#6d3e20;border:4px solid #2b1a11;border-radius:50% 50% 20% 20%}
+.person .hat:after{content:"★";position:absolute;left:36px;top:-3px;color:#ffd45e;font-size:17px}
+.eye{position:absolute;width:7px;height:9px;background:#23150e;border-radius:50%;top:25px}.person .e1{left:17px}.person .e2{right:17px}
+.person .smile{position:absolute;left:16px;top:44px;width:31px;height:11px;border-bottom:4px solid #6b1f13;border-radius:50%}
+.dog .body{position:absolute;left:20px;bottom:0;width:88px;height:92px;background:#a96e45;border:4px solid #2b1a11;border-radius:48% 48% 18px 18px}
+.dog .head{position:absolute;left:17px;top:59px;width:92px;height:80px;background:#b8794d;border:4px solid #2b1a11;border-radius:47%}
+.dog .ear{position:absolute;top:59px;width:33px;height:43px;background:#75432b;border:4px solid #2b1a11;border-radius:50%;z-index:2}
+.dog .l{left:1px;transform:rotate(15deg)}.dog .r{right:1px;transform:rotate(-15deg)}
+.dog .eye{top:27px;z-index:4}.dog .e1{left:28px}.dog .e2{right:28px}
+.muzzle{position:absolute;left:27px;top:42px;width:57px;height:34px;background:#d79a6d;border:3px solid #2b1a11;border-radius:50%;z-index:4}
+.nose{position:absolute;left:48px;top:44px;width:16px;height:11px;background:#1b110c;border-radius:50%;z-index:6}
+.collar{position:absolute;left:25px;top:130px;width:76px;height:15px;border:3px solid #2b1a11;background:#92261d;border-radius:8px;z-index:7}
+.collar:after{content:"★";position:absolute;left:29px;top:-9px;color:#ffd45e}
+.label{position:absolute;bottom:0;left:50%;transform:translateX(-50%);background:#20130d;border:2px solid #8a592c;padding:3px 10px;border-radius:8px;font-size:10px;font-weight:1000;color:var(--gold2);z-index:9}
+.buildings{position:absolute;inset:auto 8px 8px;z-index:6;display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.building{
+ min-height:72px;background:#26170fdd;border:2px solid #6e4727;border-radius:10px;padding:7px;
+ box-shadow:0 3px 0 #160d08
+}
+.building b{font-size:11px}.building small{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+.building .earn{color:var(--green);font-weight:900;font-size:9px}
+.xpwrap{margin-top:10px;background:#2a1b13;border:1px solid #65452b;border-radius:10px;padding:8px}
+.xprow{display:flex;justify-content:space-between;font-size:11px;font-weight:900}
+.bar{height:8px;background:#120c09;border-radius:8px;overflow:hidden;margin-top:5px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#d78922,#ffd969);width:0}
+.section{margin-top:12px}
+.sectiontitle{display:flex;justify-content:space-between;align-items:center;margin:0 2px 8px}
+.sectiontitle h2{font-size:18px;margin:0}.badge{font-size:10px;background:var(--gold);color:#2a1708;border-radius:20px;padding:5px 8px;font-weight:1000}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:11px}
+.card h3{margin:0 0 4px;font-size:14px}.sub{font-size:11px;color:var(--muted);line-height:1.35}
+.btn{width:100%;min-height:44px;margin-top:8px;border:1px solid #82562f;border-radius:10px;background:#39251a;color:var(--text);font-weight:950}
+.btn.gold{background:linear-gradient(#f7c44f,#d98b1e);color:#28170a}
+.btn.green{background:linear-gradient(#6cd376,#39984b);color:#10200f}
+.businessList{display:grid;gap:9px}
+.bizrow{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:11px;display:grid;grid-template-columns:44px 1fr auto;gap:9px;align-items:center}
+.bizicon{width:44px;height:44px;display:grid;place-items:center;background:#3a2518;border-radius:11px;font-size:24px}
+.bizrow h3{margin:0;font-size:14px}.bizrow p{margin:2px 0;color:var(--muted);font-size:10px}
+.bizrow .right{text-align:right}.right .btn{min-width:112px;width:auto;padding:7px 10px;margin:0}
+.tabs{display:none}
+.bottom{
+ position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:35;width:min(760px,100%);
+ background:#17100c;border-top:2px solid #54351f;padding:7px 8px calc(7px + env(safe-area-inset-bottom));
+ display:grid;grid-template-columns:repeat(5,1fr);gap:5px
+}
+.bottom button{min-height:53px;border:1px solid #624229;border-radius:11px;background:#2a1b14;color:#d8c2a0;font-size:10px;font-weight:1000}
+.bottom button.active{background:#71461f;color:#ffd667}
+.toast{
+ position:fixed;z-index:100;left:50%;top:12%;transform:translate(-50%,-15px);
+ background:#20130d;border:2px solid var(--gold);border-radius:12px;padding:11px 15px;
+ font-weight:950;text-align:center;opacity:0;pointer-events:none;transition:.2s;max-width:90%
+}.toast.show{opacity:1;transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;background:#000b;z-index:90;display:none;align-items:flex-end}
+.modal.show{display:flex}.sheet{width:min(760px,100%);max-height:86vh;overflow:auto;background:#21150f;border:2px solid #704827;border-radius:20px 20px 0 0;padding:14px 12px calc(20px + env(safe-area-inset-bottom))}
+.sheethead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.sheethead h2{margin:0;font-size:20px}
+.close{border:1px solid #65432a;background:#352319;color:#fff;border-radius:9px;padding:8px 11px}
+.stack{display:grid;gap:8px}.event{background:#2e1d13;border:1px solid #654229;border-radius:12px;padding:11px}
+.event h3{margin:0 0 3px;font-size:14px}.event p{margin:0;color:var(--muted);font-size:11px}
+.notice{padding:11px;border-radius:11px;background:#392518;border:1px solid #69462b;font-size:11px;color:#e4cda9}
+@media(min-width:650px){
+ .town{min-height:510px}.buildings{grid-template-columns:repeat(5,1fr)}
+ .building{min-height:82px}.building:nth-child(n+6){display:none}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="avatar"><span>🤠</span><small>DUSTY</small></div>
+    <div class="moneybox"><div class="money" id="cash">$500</div><div class="income" id="income">+$0 / sec</div></div>
+    <button class="menu" id="menu" aria-label="Open menu">☰</button>
+  </header>
+
+  <main class="screen">
+    <section class="town">
+      <div class="sign"><b>OUTLAW COUNTY</b><small>BUILD YOUR EMPIRE</small></div>
+      <div class="townground"></div>
+      <div class="characters">
+        <div class="person"><div class="hat"></div><div class="head"><i class="eye e1"></i><i class="eye e2"></i><i class="smile"></i></div><div class="torso"></div><div class="label">DUSTY</div></div>
+        <div class="dog"><div class="ear l"></div><div class="ear r"></div><div class="head"><i class="eye e1"></i><i class="eye e2"></i><div class="muzzle"></div><div class="nose"></div></div><div class="body"></div><div class="collar"></div><div class="label">BULLY</div></div>
+      </div>
+      <div class="buildings" id="townBuildings"></div>
+    </section>
+
+    <div class="xpwrap">
+      <div class="xprow"><span id="townLevel">Town Level 1</span><span id="xpText">0 / 100 XP</span></div>
+      <div class="bar"><i id="xpBar"></i></div>
+    </div>
+
+    <section class="section">
+      <div class="sectiontitle"><h2 id="sectionTitle">Outlaw County</h2><span class="badge" id="statusBadge">STARTING OUT</span></div>
+      <div id="mainContent"></div>
+    </section>
+  </main>
+
+  <nav class="bottom">
+    <button class="active" data-screen="town">🏠<br>Town</button>
+    <button data-screen="businesses">🏪<br>Businesses</button>
+    <button data-screen="missions">🎯<br>Missions</button>
+    <button data-screen="crew">🤠<br>Crew</button>
+    <button data-screen="more">☰<br>More</button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal">
+ <div class="sheet">
+  <div class="sheethead"><h2 id="modalTitle">Menu</h2><button class="close" id="close">Close</button></div>
+  <div id="modalBody"></div>
+ </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+const SAVE_KEY='dusty_bully_complete_v1';
+const BUSINESS_DEFS=[
+ {id:'junkyard',name:'Junk Yard',icon:'🛠️',cost:500,base:5,unlock:1,desc:'Turn scrap into steady cash.'},
+ {id:'store',name:'General Store',icon:'🏪',cost:2500,base:15,unlock:2,desc:'Sell supplies to the whole county.'},
+ {id:'garage',name:'Dusty Garage',icon:'🚙',cost:10000,base:45,unlock:3,desc:'Fix rides and charge for every job.'},
+ {id:'saloon',name:'Outlaw Diner',icon:'🍔',cost:40000,base:125,unlock:5,desc:'The busiest table in the county.'},
+ {id:'ranch',name:'Bully Ranch',icon:'🐂',cost:150000,base:360,unlock:7,desc:'Big land. Bigger profits.'},
+ {id:'casino',name:'Dusty Casino',icon:'🎰',cost:600000,base:1100,unlock:10,desc:'High stakes, high cashflow.'},
+ {id:'factory',name:'County Factory',icon:'🏭',cost:2500000,base:3400,unlock:14,desc:'Mass production for the empire.'},
+ {id:'bank',name:'Outlaw Bank',icon:'🏦',cost:12000000,base:10500,unlock:18,desc:'Now the money makes money.'}
+];
+
+const MISSION_DEFS=[
+ {id:'first',title:'First Deal',desc:'Buy your first business.',type:'owned',goal:1,reward:500,xp:30},
+ {id:'three',title:'Small Empire',desc:'Own 3 businesses.',type:'owned',goal:3,reward:5000,xp:80},
+ {id:'upgrade5',title:'Getting Serious',desc:'Reach level 5 on any business.',type:'bizlevel',goal:5,reward:12000,xp:120},
+ {id:'town5',title:'County Favorite',desc:'Reach Town Level 5.',type:'town',goal:5,reward:25000,xp:180},
+ {id:'cash100k',title:'Six Figures',desc:'Earn $100,000 lifetime cash.',type:'earned',goal:100000,reward:50000,xp:250},
+ {id:'empire',title:'Empire Builder',desc:'Own 6 businesses.',type:'owned',goal:6,reward:250000,xp:500}
+];
+
+function freshState(){
+ const businesses={};
+ BUSINESS_DEFS.forEach(d=>businesses[d.id]={owned:false,level:1,stored:0});
+ return {
+  cash:500,stored:0,lifetime:500,townLevel:1,xp:0,
+  businesses,crew:{dusty:1,bully:1},gear:0,
+  missions:{},dailyClaim:'',wagonReady:true,wagonClaims:0,
+  prestige:0,lastSave:Date.now(),event:null,eventUntil:0,
+  boostUntil:0,boostMult:1
+ };
+}
+function load(){
+ try{
+  const raw=localStorage.getItem(SAVE_KEY);
+  if(!raw)return freshState();
+  const parsed=JSON.parse(raw), base=freshState();
+  return {
+   ...base,...parsed,
+   businesses:{...base.businesses,...(parsed.businesses||{})},
+   crew:{...base.crew,...(parsed.crew||{})},
+   missions:{...(parsed.missions||{})}
+  };
+ }catch(e){return freshState();}
+}
+let S=load();
+
+function save(){S.lastSave=Date.now();try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
+function money(n){return '$'+Math.floor(Math.max(0,Number(n)||0)).toLocaleString('en-US')}
+function num(n){return Math.floor(Math.max(0,Number(n)||0))}
+function townXPGoal(){return S.townLevel*100}
+function ownedCount(){return BUSINESS_DEFS.filter(d=>S.businesses[d.id].owned).length}
+function businessIncome(d){
+ const b=S.businesses[d.id];
+ if(!b.owned)return 0;
+ const levelMult=Math.pow(1.25,b.level-1);
+ const crewMult=1+(S.crew.dusty-1)*0.04+(S.crew.bully-1)*0.025;
+ const boost=S.boostUntil>Date.now()?S.boostMult:1;
+ return d.base*levelMult*crewMult*boost;
+}
+function totalIncome(){return BUSINESS_DEFS.reduce((a,d)=>a+businessIncome(d),0)}
+function upgradeCost(d){const b=S.businesses[d.id];return Math.floor(d.cost*.62*Math.pow(1.55,b.level-1))}
+function storageCap(d){return Math.max(250,d.base*Math.pow(1.25,S.businesses[d.id].level-1)*120)}
+function addCash(n){n=num(n);S.cash+=n;S.lifetime+=n}
+function addXP(n){
+ S.xp+=num(n);
+ let leveled=false;
+ while(S.xp>=townXPGoal()){
+  S.xp-=townXPGoal();S.townLevel++;leveled=true;
+ }
+ if(leveled)toast('⭐ Town Level '+S.townLevel+' reached!');
+}
+function showToast(message){
+ const el=document.getElementById('toast');el.textContent=message;el.classList.add('show');
+ clearTimeout(showToast.t);showToast.t=setTimeout(()=>el.classList.remove('show'),1900);
+}
+const toast=showToast;
+
+function renderHeader(){
+ document.getElementById('cash').textContent=money(S.cash);
+ document.getElementById('income').textContent='+'+money(totalIncome())+' / sec';
+ document.getElementById('townLevel').textContent='Town Level '+S.townLevel;
+ document.getElementById('xpText').textContent=num(S.xp)+' / '+townXPGoal()+' XP';
+ document.getElementById('xpBar').style.width=Math.min(100,S.xp/townXPGoal()*100)+'%';
+}
+function renderTownBuildings(){
+ const box=document.getElementById('townBuildings');box.innerHTML='';
+ const visible=BUSINESS_DEFS.filter(d=>S.townLevel>=d.unlock-1).slice(0,5);
+ visible.forEach(d=>{
+  const b=S.businesses[d.id], el=document.createElement('div');el.className='building';
+  el.innerHTML='<b>'+d.icon+' '+d.name+'</b><small>'+(b.owned?'LV '+b.level:'For Sale')+'</small><span class="earn">'+(b.owned?'+'+money(businessIncome(d))+'/sec':money(d.cost))+'</span>';
+  box.appendChild(el);
+ });
+}
+function renderTown(){
+ document.getElementById('sectionTitle').textContent='Outlaw County';
+ document.getElementById('statusBadge').textContent=S.prestige?'PRESTIGE '+S.prestige:'LEVEL '+S.townLevel;
+ const income=totalIncome();
+ const stored=BUSINESS_DEFS.reduce((a,d)=>a+(S.businesses[d.id].owned?S.businesses[d.id].stored:0),0);
+ document.getElementById('mainContent').innerHTML=`
+ <div class="grid">
+  <div class="card"><h3>💰 Cashflow</h3><div class="sub">${money(income)} every second<br>${money(stored)} waiting to collect</div><button class="btn gold" id="collectAll">Collect All</button></div>
+  <div class="card"><h3>🎁 Daily Reward</h3><div class="sub">A daily payout that grows with your town.</div><button class="btn gold" id="dailyBtn">Claim Reward</button></div>
+  <div class="card"><h3>🚚 County Wagon</h3><div class="sub" id="wagonInfo">${S.wagonReady?'Rusty has a reward for you!':'No wagon right now.'}</div>${S.wagonReady?'<button class="btn green" id="wagonBtn">Claim Wagon</button>':''}</div>
+  <div class="card"><h3>⚡ County Rush</h3><div class="sub">Double all business income for 60 seconds.</div><button class="btn" id="rushBtn">Start Rush — 1 Gear</button></div>
+ </div>
+ <div class="card" style="margin-top:9px"><h3>📈 Your Empire</h3><div class="sub">${ownedCount()} / ${BUSINESS_DEFS.length} businesses owned • Lifetime cash ${money(S.lifetime)} • Wagon claims ${S.wagonClaims}</div></div>`;
+ document.getElementById('collectAll').onclick=collectAll;
+ document.getElementById('dailyBtn').onclick=claimDaily;
+ if(document.getElementById('wagonBtn'))document.getElementById('wagonBtn').onclick=claimWagon;
+ document.getElementById('rushBtn').onclick=startRush;
+}
+function renderBusinesses(){
+ document.getElementById('sectionTitle').textContent='Businesses';
+ document.getElementById('statusBadge').textContent=ownedCount()+'/'+BUSINESS_DEFS.length+' OWNED';
+ let html='<div class="businessList">';
+ BUSINESS_DEFS.forEach(d=>{
+  const b=S.businesses[d.id], unlocked=S.townLevel>=d.unlock;
+  const income=businessIncome(d);
+  const cost=b.owned?upgradeCost(d):d.cost;
+  html+=`<div class="bizrow">
+   <div class="bizicon">${d.icon}</div>
+   <div><h3>${d.name} ${b.owned?'• LV '+b.level:''}</h3><p>${d.desc}<br>${b.owned?'Income '+money(income)+'/sec':'Unlock at Town Level '+d.unlock}</p></div>
+   <div class="right"><button class="btn ${b.owned?'':'gold'}" data-business="${d.id}" ${(!b.owned&&!unlocked)?'disabled':''}>${b.owned?'Upgrade '+money(cost):'Buy '+money(cost)}</button></div>
+  </div>`;
+ });
+ html+='</div>';
+ document.getElementById('mainContent').innerHTML=html;
+ document.querySelectorAll('[data-business]').forEach(btn=>btn.onclick=()=>buyOrUpgrade(btn.dataset.business));
+}
+function missionProgress(m){
+ const owned=ownedCount();
+ if(m.type==='owned')return owned;
+ if(m.type==='bizlevel')return Math.max(...BUSINESS_DEFS.map(d=>S.businesses[d.id].owned?S.businesses[d.id].level:0));
+ if(m.type==='town')return S.townLevel;
+ if(m.type==='earned')return S.lifetime;
+ return 0;
+}
+function renderMissions(){
+ document.getElementById('sectionTitle').textContent='Missions';
+ document.getElementById('statusBadge').textContent='REWARDS';
+ let html='<div class="stack">';
+ MISSION_DEFS.forEach(m=>{
+  const done=!!S.missions[m.id],p=Math.min(m.goal,missionProgress(m));
+  html+=`<div class="event"><h3>${done?'✅':'🎯'} ${m.title}</h3><p>${m.desc}<br><b>${m.type==='earned'?money(p):p+' / '+m.goal}</b> • Reward ${money(m.reward)} + ${m.xp} XP</p>${!done&&p>=m.goal?'<button class="btn green" data-mission="'+m.id+'">Claim Mission Reward</button>':''}</div>`;
+ });
+ html+='</div>';
+ document.getElementById('mainContent').innerHTML=html;
+ document.querySelectorAll('[data-mission]').forEach(b=>b.onclick=()=>claimMission(b.dataset.mission));
+}
+function renderCrew(){
+ document.getElementById('sectionTitle').textContent='Crew';
+ document.getElementById('statusBadge').textContent='TEAM LV '+Math.max(S.crew.dusty,S.crew.bully);
+ const dc=crewCost('dusty'),bc=crewCost('bully');
+ document.getElementById('mainContent').innerHTML=`
+ <div class="grid">
+  <div class="card"><h3>🤠 Dusty</h3><div class="sub">Boss skill: +4% business income per Dusty level.<br>Current Level ${S.crew.dusty}</div><button class="btn gold" id="dustyUp">Train ${money(dc)}</button></div>
+  <div class="card"><h3>🐶 Bully</h3><div class="sub">Finder skill: +2.5% business income per Bully level.<br>Current Level ${S.crew.bully}</div><button class="btn gold" id="bullyUp">Train ${money(bc)}</button></div>
+ </div>
+ <div class="card" style="margin-top:9px"><h3>🔩 Gear</h3><div class="sub">Gear is used for County Rush. Earn gear from milestones and random events.</div></div>`;
+ document.getElementById('dustyUp').onclick=()=>trainCrew('dusty');
+ document.getElementById('bullyUp').onclick=()=>trainCrew('bully');
+}
+function renderMore(){
+ document.getElementById('sectionTitle').textContent='More';
+ document.getElementById('statusBadge').textContent='COUNTY';
+ document.getElementById('mainContent').innerHTML=`
+ <div class="grid">
+  <div class="card"><h3>🏆 Prestige</h3><div class="sub">Reset your town at Level 20+ to gain a permanent +10% income per Prestige.</div><button class="btn" id="prestigeBtn" ${S.townLevel<20?'disabled':''}>Prestige</button></div>
+  <div class="card"><h3>🎲 Lucky Event</h3><div class="sub">${S.event&&S.eventUntil>Date.now()?S.event:'Events happen automatically while you play.'}</div><button class="btn" id="eventBtn">Check County</button></div>
+  <div class="card"><h3>💾 Save</h3><div class="sub">Progress saves automatically on this device.</div><button class="btn" id="saveBtn">Save Now</button></div>
+  <div class="card"><h3>♻️ Reset</h3><div class="sub">Start the entire game over. This cannot be undone.</div><button class="btn" id="resetBtn">Reset Game</button></div>
+ </div>`;
+ document.getElementById('prestigeBtn').onclick=prestige;
+ document.getElementById('eventBtn').onclick=triggerEvent;
+ document.getElementById('saveBtn').onclick=()=>{save();toast('Game saved.')};
+ document.getElementById('resetBtn').onclick=resetGame;
+}
+let currentScreen='town';
+function render(){
+ renderHeader();renderTownBuildings();
+ if(currentScreen==='town')renderTown();
+ if(currentScreen==='businesses')renderBusinesses();
+ if(currentScreen==='missions')renderMissions();
+ if(currentScreen==='crew')renderCrew();
+ if(currentScreen==='more')renderMore();
+ document.querySelectorAll('.bottom button').forEach(b=>b.classList.toggle('active',b.dataset.screen===currentScreen));
+}
+function setScreen(screen){currentScreen=screen;render()}
+
+function buyOrUpgrade(id){
+ const d=BUSINESS_DEFS.find(x=>x.id===id),b=S.businesses[id];if(!d)return;
+ if(!b.owned){
+  if(S.townLevel<d.unlock)return toast('Reach Town Level '+d.unlock+'.');
+  if(S.cash<d.cost)return toast('You need '+money(d.cost)+'.');
+  S.cash-=d.cost;b.owned=true;b.level=1;b.stored=0;addXP(35);toast(d.name+' is yours!');
+ }else{
+  const c=upgradeCost(d);
+  if(S.cash<c)return toast('Upgrade costs '+money(c)+'.');
+  S.cash-=c;b.level++;addXP(12);toast(d.name+' upgraded to Level '+b.level+'!');
+ }
+ save();render();
+}
+function collectAll(){
+ let total=0;
+ BUSINESS_DEFS.forEach(d=>{const b=S.businesses[d.id];if(b.owned){total+=num(b.stored);b.stored=0}});
+ if(total<=0)return toast('Nothing to collect yet.');
+ addCash(total);addXP(Math.min(40,Math.floor(total/100)));
+ toast('💵 Collected '+money(total)+'!');
+ save();render();
+}
+function claimDaily(){
+ const today=new Date().toISOString().slice(0,10);
+ if(S.dailyClaim===today)return toast('Daily reward already claimed.');
+ const reward=250+S.townLevel*150;
+ addCash(reward);S.dailyClaim=today;addXP(15);S.gear++;
+ toast('🎁 '+money(reward)+' + 1 Gear!');
+ save();render();
+}
+function claimWagon(){
+ if(!S.wagonReady)return toast('No wagon available.');
+ const reward=600+S.townLevel*225;
+ addCash(reward);S.wagonReady=false;S.wagonClaims++;S.gear++;
+ toast('🚚 Rusty paid '+money(reward)+'!');
+ save();render();
+ setTimeout(()=>{
+  S.wagonReady=true;save();render();toast('🚚 Rusty is back!');
+ },120000);
+}
+function startRush(){
+ if(S.gear<1)return toast('You need 1 Gear.');
+ if(S.boostUntil>Date.now())return toast('County Rush is already active.');
+ S.gear--;S.boostMult=2;S.boostUntil=Date.now()+60000;
+ toast('⚡ COUNTY RUSH! 2× income for 60 seconds!');
+ save();render();
+}
+function crewCost(who){
+ return Math.floor(1500*Math.pow(1.8,S.crew[who]-1));
+}
+function trainCrew(who){
+ const c=crewCost(who);
+ if(S.cash<c)return toast('Training costs '+money(c)+'.');
+ S.cash-=c;S.crew[who]++;addXP(10);toast((who==='dusty'?'Dusty':'Bully')+' reached Level '+S.crew[who]+'!');
+ save();render();
+}
+function claimMission(id){
+ const m=MISSION_DEFS.find(x=>x.id===id);if(!m||S.missions[id])return;
+ if(missionProgress(m)<m.goal)return;
+ S.missions[id]=true;addCash(m.reward);addXP(m.xp);toast('🏆 Mission complete: '+m.title);
+ save();render();
+}
+function triggerEvent(){
+ const events=[
+  {text:'🤠 A traveler buys everything! +$1,000',cash:1000,xp:10},
+  {text:'🐶 Bully found a hidden stash! +$750',cash:750,xp:8},
+  {text:'🚜 County construction boom! +$2,500',cash:2500,xp:15},
+  {text:'⭐ Dusty gets a lucky deal! +1 Gear +$1,500',cash:1500,xp:12,gear:1}
+ ];
+ const e=events[Math.floor(Math.random()*events.length)];
+ addCash(e.cash);addXP(e.xp);if(e.gear)S.gear+=e.gear;
+ S.event=e.text;S.eventUntil=Date.now()+6000;toast(e.text);save();render();
+}
+function prestige(){
+ if(S.townLevel<20)return toast('Reach Town Level 20 first.');
+ S.prestige++;
+ const bonus=S.prestige;
+ S.cash=500;S.stored=0;S.townLevel=1;S.xp=0;S.gear=0;S.boostUntil=0;S.boostMult=1;
+ BUSINESS_DEFS.forEach(d=>{S.businesses[d.id]={owned:false,level:1,stored:0}});
+ toast('👑 Prestige '+bonus+'! Permanent income bonus unlocked.');
+ save();render();
+}
+function resetGame(){
+ if(!confirm('Reset all Dusty & Bully progress?'))return;
+ localStorage.removeItem(SAVE_KEY);S=freshState();toast('New county started.');render();
+}
+
+document.querySelectorAll('.bottom button').forEach(b=>b.addEventListener('click',()=>setScreen(b.dataset.screen)));
+document.getElementById('menu').onclick=()=>setScreen('more');
+
+function gameTick(){
+ const income=totalIncome();
+ const dt=1;
+ BUSINESS_DEFS.forEach(d=>{
+  const b=S.businesses[d.id];
+  if(!b.owned)return;
+  b.stored=Math.min(storageCap(d),b.stored+businessIncome(d)*dt);
+ });
+ if(S.boostUntil && Date.now()>=S.boostUntil){S.boostUntil=0;S.boostMult=1;toast('County Rush ended.');}
+ if(Math.random()<0.006)triggerEvent();
+ save();render();
+}
+setInterval(gameTick,1000);
+
+// Offline progress, capped at 8 hours.
+(function offline(){
+ const elapsed=Math.min(8*60*60,Math.max(0,(Date.now()-Number(S.lastSave||Date.now()))/1000));
+ if(elapsed>30 && totalIncome()>0){
+  const gain=Math.floor(totalIncome()*elapsed);
+  addCash(gain);
+  toast('Welcome back! '+money(gain)+' earned offline.');
+ }
+ save();render();
+})();
+
+render();
+})();
+</script>
+</body>
+</html>
